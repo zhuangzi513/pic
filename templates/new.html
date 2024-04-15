@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<title>Title</title>
+	</head>
+	<body>
+	<div>
+		<form method="post" action="http://139.196.228.215/up_photo" enctype="multipart/form-data">
+		<input type="file" size="30" name="photo"/>
+		<br>
+		<select name="color">
+			<option value="green" selected> 绿色 </option>
+			<option value="yellow">黄色 </option>
+			<option value="purple">紫色 </option>
+		</select>
+		<br>
+		<input type="text" value="尺寸:长" name="size_len" />
+		<br>
+		<input type="text" value="尺寸:宽" name="size_width" />
+		<br>
+		<input type="text" value="尺寸:厚" name="size_height" />
+		<br>
+		<!--            <input type="text" class="txt_input" name="name" style="margin-top:15px;"/>-->
+		<input type="submit" value="提交信息" class="button-new" style="margin-top:15px;"/>
+		</form>
+	</div>
+	</body>
+</html>
+
