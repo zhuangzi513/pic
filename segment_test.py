@@ -180,3 +180,10 @@ while True:
 
     if key == 27:
         break
+
+
+**3：测试**
+ 如果GPU 显存小  --checkpoint sam_vit_h_4b8939.pth --model-type vit_h 换下  --checkpoint sam_vit_b_01ec64.pth --model-type vit_b
+ 如果显存 更小  参考 https://github.com/gaomingqi/Track-Anything/issues/4    
+```bash
+python scripts/amg.py --checkpoint sam_vit_h_4b8939.pth --model-type vit_h --input F:\gameai\segment-anything\input --output F:\gameai\segment-anything\output
