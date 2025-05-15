@@ -1,0 +1,20 @@
+{
+  "settings_version": "0.0.6",
+  "datasets_dir": "/root/test_yolo/test/yolo/dataset/",
+  "weights_dir": "/root/test_yolo/test/yolo/weights/origin/",
+  "runs_dir": "/root/test_yolo/test/yolo/fine_tuning/runs",
+  "uuid": "822ede738e5914d8376998937c4ee2ddc3a6c1e0fe264fe480b85fc3066d2532",
+  "sync": true,
+  "api_key": "",
+  "openai_api_key": "",
+  "clearml": true,
+  "comet": true,
+  "dvc": true,
+  "hub": true,
+  "mlflow": true,
+  "neptune": true,
+  "raytune": true,
+  "tensorboard": false,
+  "wandb": false,
+  "vscode_msg": true
+}
