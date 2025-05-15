@@ -1,0 +1,76 @@
+1) config_ultralytics_settings.json is the global config of the fine_tuning;
+2) the dataset locaction includes two parts:
+    1) 'datasets_dir' is specified in the config_ultralytics_settings.json;
+    2) 'train'/'val' in data.yaml
+    3) the 'datasets_dir' + 'train'  and 'datasets_dir' + 'val' are the locations of the data.
+3) the files in the 'datasets_dir':
+.
+./images
+./images/train
+./images/train/face4.jpg
+./images/train/face0.jpg
+./images/train/face8.jpg
+./images/train/face3.jpg
+./images/train/face7.jpg
+./images/train/face1.jpg
+./images/train/face6.jpg
+./images/train/face5.jpg
+./images/train/face2.jpg
+./images/train/face9.jpg
+./images/val
+./images/val/face4.jpg
+./images/val/face15.jpg
+./images/val/cp.sh
+./images/val/face0.jpg
+./images/val/face16.jpg
+./images/val/face8.jpg
+./images/val/face3.jpg
+./images/val/face7.jpg
+./images/val/face18.jpg
+./images/val/face1.jpg
+./images/val/face6.jpg
+./images/val/face5.jpg
+./images/val/face11.jpg
+./images/val/cp
+./images/val/face19.jpg
+./images/val/face2.jpg
+./images/val/face9.jpg
+./images/val/face10.jpg
+./images/val/face13.jpg
+./images/val/face12.jpg
+./images/val/face14.jpg
+./images/val/face17.jpg
+./labels
+./labels/train
+./labels/train/face3.txt
+./labels/train/face0.txt
+./labels/train/face8.txt
+./labels/train/face4.txt
+./labels/train/face1.txt
+./labels/train/face5.txt
+./labels/train/face6.txt
+./labels/train/face7.txt
+./labels/train/face9.txt
+./labels/train/face2.txt
+./labels/val
+./labels/val/face3.txt
+./labels/val/face18.txt
+./labels/val/face19.txt
+./labels/val/face15.txt
+./labels/val/face13.txt
+./labels/val/cp.sh
+./labels/val/face10.txt
+./labels/val/face0.txt
+./labels/val/face8.txt
+./labels/val/face4.txt
+./labels/val/face12.txt
+./labels/val/face1.txt
+./labels/val/face14.txt
+./labels/val/face5.txt
+./labels/val/face11.txt
+./labels/val/face6.txt
+./labels/val/face7.txt
+./labels/val/face16.txt
+./labels/val/face9.txt
+./labels/val/face17.txt
+./labels/val/face2.txt
