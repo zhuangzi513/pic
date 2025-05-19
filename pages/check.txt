@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GPU估价系统</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .image-upload {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .image-preview {
+            width: 150px;
+            height: 150px;
+            border: 1px dashed #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        .image-preview img {
+            max-width: 100%;
+            max-height: 100%;
+        }
+        .result-section {
+            margin-top: 30px;
+            display: none;
+        }
+        .similar-products {
+            margin-top: 20px;
+            display: none;
+        }
+        .product-item {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+        .product-link {
+            color: #0066cc;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .product-link:hover {
+            text-decoration: underline;
+        }
+        .product-detail {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>GPU估价系统</h1>
+    
+    <form id="gpuForm">
+        <div class="form-group">
+            <label>上传GPU图片 (最多4张)</label>
+            <div class="image-upload">
+                <div class="image-preview" id="preview1">
+                    <span>点击上传图片1</span>
+                    <input type="file" accept="image/*" style="display: none;" onchange="previewImage(this, 'preview1')">
+                </div>
+                <div class="image-preview" id="preview2">
+                    <span>点击上传图片2</span>
+                    <input type="file" accept="image/*" style="display: none;" onchange="previewImage(this, 'preview2')">
+                </div>
+                <div class="image-preview" id="preview3">
+                    <span>点击上传图片3</span>
+                    <input type="file" accept="image/*" style="display: none;" onchange="previewImage(this, 'preview3')">
+                </div>
+                <div class="image-preview" id="preview4">
+                    <span>点击上传图片4</span>
+                    <input type="file" accept="image/*" style="display: none;" onchange="previewImage(this, 'preview4')">
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label>尺寸信息</label>
+            <div style="display: flex; gap: 10px;">
+                <input type="number" placeholder="长度(mm)" id="length" required>
+                <input type="number" placeholder="宽度(mm)" id="width" required>
+                <input type="number" placeholder="高度(mm)" id="height" required>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label>品牌信息</label>
+            <select id="brand" required>
+                <option value="">请选择品牌</option>
+                <option value="沐曦">沐曦</option>
+                <option value="英伟达">英伟达</option>
+                <option value="天数">天数</option>
+                <option value="AMD">AMD</option>
+                <option value="英特尔">英特尔</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label>生产日期</label>
+            <select id="productionDate" required>
+                <option value="">请选择生产日期</option>
+                <option value="1">1年</option>
+                <option value="2">2年</option>
+                <option value="3">3年</option>
+                <option value="4">4年</option>
+                <option value="5">5年以上</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label>期望价格(元)</label>
+            <input type="number" id="expectedPrice" placeholder="请输入期望价格" required>
+        </div>
+        
+        <button type="submit">提交估价</button>
+    </form>
+    
+    <div class="result-section" id="resultSection">
+        <h2>估价结果</h2>
+        <p><strong>推荐价格:</strong> <span id="recommendedPrice"></span> 元</p>
+        <p><strong>类似GPU数量:</strong> <span id="similarCount"></span> 个</p>
+        <button id="showSimilarBtn">查看类似商品信息</button>
+        
+        <div class="similar-products" id="similarProducts">
+            <h3>类似商品信息 (前10个)</h3>
+            <div id="productList"></div>
+        </div>
+    </div>
+    
+    <!-- 商品详情区域 -->
+    <div class="product-detail" id="productDetail">
+        <h3 id="detailTitle">商品详情</h3>
+        <div id="detailContent"></div>
+        <button onclick="hideProductDetail()">返回列表</button>
+    </div>
+    
+    <script>
+        // 图片预览功能
+        function previewImage(input, previewId) {
+            const preview = document.getElementById(previewId);
+            const file = input.files[0];
+            const reader = new FileReader();
+            
+            preview.innerHTML = '';
+            
+            reader.onload = function(e) {
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                preview.appendChild(img);
+            }
+            
+            if (file) {
+                reader.readAsDataURL(file);
+            }
+        }
+        
+        // 为图片预览区域添加点击事件
+        document.querySelectorAll('.image-preview').forEach(preview => {
+            preview.addEventListener('click', function() {
+                const input = this.querySelector('input');
+                if (input) input.click();
+            });
+        });
+        
+        // 模拟的类似GPU数据
+        const mockSimilarGPUs = [
+            { id: 1, brand: "英伟达", model: "RTX 3090", length: 313, width: 138, height: 61, productionDate: "1", price: 12000, 
+              details: "NVIDIA GeForce RTX 3090 是英伟达公司推出的高端显卡，拥有24GB GDDR6X显存，10496个CUDA核心。" },
+            { id: 2, brand: "英伟达", model: "RTX 3080", length: 285, width: 112, height: 40, productionDate: "2", price: 8000, 
+              details: "NVIDIA GeForce RTX 3080 拥有10GB GDDR6X显存，8704个CUDA核心，性能强劲。" },
+            { id: 3, brand: "AMD", model: "RX 6900 XT", length: 267, width: 120, height: 50, productionDate: "1", price: 9000, 
+              details: "AMD Radeon RX 6900 XT 采用RDNA 2架构，16GB GDDR6显存，5120个流处理器。" },
+            { id: 4, brand: "沐曦", model: "MX100", length: 300, width: 130, height: 55, productionDate: "1", price: 7500, 
+              details: "沐曦MX100是国内自主研发的高性能显卡，专为AI计算和图形处理优化。" },
+            { id: 5, brand: "天数", model: "TS200", length: 290, width: 125, height: 45, productionDate: "2", price: 6800, 
+              details: "天数智芯TS200是一款面向数据中心的高性能计算卡，支持多种AI框架。" },
+            { id: 6, brand: "英伟达", model: "RTX 3070", length: 242, width: 112, height: 40, productionDate: "2", price: 5000, 
+              details: "NVIDIA GeForce RTX 3070 拥有8GB GDDR6显存，5888个CUDA核心，性价比极高。" },
+            { id: 7, brand: "AMD", model: "RX 6800 XT", length: 267, width: 120, height: 50, productionDate: "1", price: 7000, 
+              details: "AMD Radeon RX 6800 XT 采用RDNA 2架构，16GB GDDR6显存，4608个流处理器。" },
+            { id: 8, brand: "英特尔", model: "Arc A770", length: 270, width: 110, height: 42, productionDate: "1", price: 3500, 
+              details: "Intel Arc A770 是英特尔重返独立显卡市场的首款高性能产品，16GB GDDR6显存。" },
+            { id: 9, brand: "英伟达", model: "RTX 3060 Ti", length: 242, width: 112, height: 40, productionDate: "3", price: 3200, 
+              details: "NVIDIA GeForce RTX 3060 Ti 拥有8GB GDDR6显存，4864个CUDA核心。" },
+            { id: 10, brand: "AMD", model: "RX 6700 XT", length: 267, width: 120, height: 50, productionDate: "2", price: 3800, 
+              details: "AMD Radeon RX 6700 XT 采用RDNA 2架构，12GB GDDR6显存，2560个流处理器。" },
+            { id: 11, brand: "沐曦", model: "MX80", length: 280, width: 120, height: 50, productionDate: "2", price: 4500, 
+              details: "沐曦MX80是国内自主研发的中高端显卡，适合专业图形处理和AI推理。" },
+            { id: 12, brand: "天数", model: "TS150", length: 270, width: 115, height: 45, productionDate: "3", price: 4200, 
+              details: "天数智芯TS150是一款面向企业和专业用户的通用计算卡。" }
+        ];
+        
+        // 表单提交处理
+        document.getElementById('gpuForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // 获取表单数据
+            const length = document.getElementById('length').value;
+            const width = document.getElementById('width').value;
+            const height = document.getElementById('height').value;
+            const brand = document.getElementById('brand').value;
+            const productionDate = document.getElementById('productionDate').value;
+            const expectedPrice = document.getElementById('expectedPrice').value;
+            
+            // 模拟服务器处理 - 在实际应用中这里应该是AJAX请求
+            setTimeout(() => {
+                // 模拟推荐价格计算 (这里只是简单示例)
+                const basePrice = {
+                    "沐曦": 6000,
+                    "英伟达": 8000,
+                    "天数": 5000,
+                    "AMD": 7000,
+                    "英特尔": 4000
+                };
+                
+                let recommendedPrice = basePrice[brand] || 5000;
+                
+                // 根据使用年限调整价格
+                const ageDiscount = {
+                    "1": 1.0,
+                    "2": 0.8,
+                    "3": 0.6,
+                    "4": 0.5,
+                    "5": 0.4
+                };
+                
+                recommendedPrice *= ageDiscount[productionDate] || 0.5;
+                
+                // 随机波动 ±10%
+                recommendedPrice *= (0.9 + Math.random() * 0.2);
+                recommendedPrice = Math.round(recommendedPrice);
+                
+                // 显示结果
+                document.getElementById('recommendedPrice').textContent = recommendedPrice;
+                
+                // 筛选类似GPU (这里只是简单示例)
+                const similarGPUs = mockSimilarGPUs.filter(gpu => 
+                    gpu.brand === brand || 
+                    Math.abs(gpu.length - length) < 30 || 
+                    Math.abs(gpu.width - width) < 20 || 
+                    Math.abs(gpu.height - height) < 10
+                );
+                
+                document.getElementById('similarCount').textContent = similarGPUs.length;
+                
+                // 存储类似GPU数据供后续显示
+                document.getElementById('similarProducts').dataset.products = JSON.stringify(similarGPUs);
+                
+                // 显示结果区域
+                document.getElementById('resultSection').style.display = 'block';
+                document.getElementById('similarProducts').style.display = 'none';
+                document.getElementById('productDetail').style.display = 'none';
+            }, 1000);
+        });
+        
+        // 显示类似商品按钮点击事件
+        document.getElementById('showSimilarBtn').addEventListener('click', function() {
+            const similarProducts = document.getElementById('similarProducts');
+            const productList = document.getElementById('productList');
+            
+            if (similarProducts.style.display === 'none') {
+                // 解析存储的类似GPU数据
+                const productsData = JSON.parse(similarProducts.dataset.products || '[]');
+                const productsToShow = productsData.slice(0, 10);
+                
+                // 清空现有列表
+                productList.innerHTML = '';
+                
+                // 添加商品到列表
+                productsToShow.forEach(product => {
+                    const productItem = document.createElement('div');
+                    productItem.className = 'product-item';
+                    
+                    const dateText = {
+                        "1": "1年",
+                        "2": "2年",
+                        "3": "3年",
+                        "4": "4年",
+                        "5": "5年以上"
+                    };
+                    
+                    // 创建可点击的商品链接
+                    const productLink = document.createElement('a');
+                    productLink.href = 'www.baidu.com';
+                    productLink.className = 'product-link';
+                    productLink.textContent = `${product.brand} ${product.model}`;
+                    productLink.onclick = function() {
+                        showProductDetail(product.id);
+                    };
+                    
+                    productItem.innerHTML = `
+                        <p><strong>型号:</strong> `;
+                    productItem.appendChild(productLink);
+                    productItem.innerHTML += `</p>
+                        <p><strong>尺寸:</strong> ${product.length}mm × ${product.width}mm × ${product.height}mm</p>
+                        <p><strong>生产日期:</strong> ${dateText[product.productionDate] || product.productionDate + '年'}</p>
+                        <p><strong>价格:</strong> ${product.price} 元</p>
+                    `;
+                    
+                    productList.appendChild(productItem);
+                });
+                
+                similarProducts.style.display = 'block';
+            } else {
+                similarProducts.style.display = 'none';
+            }
+        });
+        
+        // 显示商品详情
+        function showProductDetail(productId) {
+            const product = mockSimilarGPUs.find(p => p.id === productId);
+			alert(product)
+            //if (!product) return;
+            
+            const detailTitle = document.getElementById('detailTitle');
+            const detailContent = document.getElementById('detailContent');
+            
+            detailTitle.textContent = `${product.brand} ${product.model} 详情`;
+            
+            const dateText = {
+                "1": "1年",
+                "2": "2年",
+                "3": "3年",
+                "4": "4年",
+                "5": "5年以上"
+            };
+            
+            detailContent.innerHTML = `
+                <p><strong>品牌:</strong> ${product.brand}</p>
+                <p><strong>型号:</strong> ${product.model}</p>
+                <p><strong>尺寸:</strong> ${product.length}mm × ${product.width}mm × ${product.height}mm</p>
+                <p><strong>生产日期:</strong> ${dateText[product.productionDate] || product.productionDate + '年'}</p>
+                <p><strong>价格:</strong> ${product.price} 元</p>
+                <p><strong>详细描述:</strong> ${product.details}</p>
+            `;
+            
+            // 隐藏列表，显示详情
+            document.getElementById('similarProducts').style.display = 'none';
+            document.getElementById('productDetail').style.display = 'block';
+        }
+        
+        // 隐藏商品详情，返回列表
+        function hideProductDetail() {
+            document.getElementById('productDetail').style.display = 'none';
+            document.getElementById('similarProducts').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
