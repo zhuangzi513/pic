@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GPU估价系统</title>
+    <title id="pageTitle">GPU估价系统</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -89,42 +89,42 @@
     </style>
 </head>
 <body>
-    <h1>GPU估价系统</h1>
+    <h1 id="mainHeader">GPU估价系统</h1>
     
     <form id="gpuForm">
         <div class="form-group">
-            <label>上传GPU图片 (最多4张)</label>
+            <label id="uploadImagesLabel">上传GPU图片 (最多4张)</label>
             <div class="image-upload">
                 <div class="image-preview" id="preview1">
-                    <span>点击上传图片1</span>
+                    <span id="uploadHint1">点击上传图片1</span>
                     <input type="file" accept="image/*" style="display: none;" onchange="previewImage(this, 'preview1')">
                 </div>
                 <div class="image-preview" id="preview2">
-                    <span>点击上传图片2</span>
+                    <span id="uploadHint2">点击上传图片2</span>
                     <input type="file" accept="image/*" style="display: none;" onchange="previewImage(this, 'preview2')">
                 </div>
                 <div class="image-preview" id="preview3">
-                    <span>点击上传图片3</span>
+                    <span id="uploadHint3">点击上传图片3</span>
                     <input type="file" accept="image/*" style="display: none;" onchange="previewImage(this, 'preview3')">
                 </div>
                 <div class="image-preview" id="preview4">
-                    <span>点击上传图片4</span>
+                    <span id="uploadHint4">点击上传图片4</span>
                     <input type="file" accept="image/*" style="display: none;" onchange="previewImage(this, 'preview4')">
                 </div>
             </div>
         </div>
         
         <div class="form-group">
-            <label>尺寸信息</label>
+            <label id="dimensionsLabel">尺寸信息</label>
             <div style="display: flex; gap: 10px;">
-                <input type="number" placeholder="长度(mm)" id="length" required>
-                <input type="number" placeholder="宽度(mm)" id="width" required>
-                <input type="number" placeholder="高度(mm)" id="height" required>
+                <input type="number" id="length" placeholder="长度(mm)" required>
+                <input type="number" id="width" placeholder="宽度(mm)" required>
+                <input type="number" id="height" placeholder="高度(mm)" required>
             </div>
         </div>
         
         <div class="form-group">
-            <label>品牌信息</label>
+            <label id="brandLabel">品牌信息</label>
             <select id="brand" required>
                 <option value="">请选择品牌</option>
                 <option value="沐曦">沐曦</option>
@@ -136,7 +136,7 @@
         </div>
         
         <div class="form-group">
-            <label>生产日期</label>
+            <label id="productionDateLabel">生产日期</label>
             <select id="productionDate" required>
                 <option value="">请选择生产日期</option>
                 <option value="1">1年</option>
@@ -148,33 +148,167 @@
         </div>
         
         <div class="form-group">
-            <label>期望价格(元)</label>
+            <label id="expectedPriceLabel">期望价格(元)</label>
             <input type="number" id="expectedPrice" placeholder="请输入期望价格" required>
         </div>
         
-        <button type="submit">提交估价</button>
+        <button type="submit" id="submitBtn">提交估价</button>
     </form>
     
     <div class="result-section" id="resultSection">
-        <h2>估价结果</h2>
-        <p><strong>推荐价格:</strong> <span id="recommendedPrice"></span> 元</p>
-        <p><strong>类似GPU数量:</strong> <span id="similarCount"></span> 个</p>
+        <h2 id="resultHeader">估价结果</h2>
+        <p><strong id="recommendedPriceLabel">推荐价格:</strong> <span id="recommendedPrice"></span> <span id="currencyUnit">元</span></p>
+        <p><strong id="similarCountLabel">类似GPU数量:</strong> <span id="similarCount"></span> <span id="unitLabel">个</span></p>
         <button id="showSimilarBtn">查看类似商品信息</button>
         
         <div class="similar-products" id="similarProducts">
-            <h3>类似商品信息 (前10个)</h3>
+            <h3 id="similarProductsHeader">类似商品信息 (前10个)</h3>
             <div id="productList"></div>
         </div>
     </div>
     
-    <!-- 商品详情区域 -->
     <div class="product-detail" id="productDetail">
         <h3 id="detailTitle">商品详情</h3>
         <div id="detailContent"></div>
-        <button onclick="hideProductDetail()">返回列表</button>
+        <button id="backToListBtn">返回列表</button>
     </div>
     
     <script>
+        // 多语言配置
+        const i18nConfig = {
+            "zh-CN": {
+                "pageTitle": "GPU估价系统",
+                "mainHeader": "GPU估价系统",
+                "uploadImagesLabel": "上传GPU图片 (最多4张)",
+                "uploadHint1": "点击上传图片1",
+                "uploadHint2": "点击上传图片2",
+                "uploadHint3": "点击上传图片3",
+                "uploadHint4": "点击上传图片4",
+                "dimensionsLabel": "尺寸信息",
+                "lengthPlaceholder": "长度(mm)",
+                "widthPlaceholder": "宽度(mm)",
+                "heightPlaceholder": "高度(mm)",
+                "brandLabel": "品牌信息",
+                "selectBrand": "请选择品牌",
+                "productionDateLabel": "生产日期",
+                "selectProductionDate": "请选择生产日期",
+                "year1": "1年",
+                "year2": "2年",
+                "year3": "3年",
+                "year4": "4年",
+                "year5": "5年以上",
+                "expectedPriceLabel": "期望价格(元)",
+                "expectedPricePlaceholder": "请输入期望价格",
+                "submitBtn": "提交估价",
+                "resultHeader": "估价结果",
+                "recommendedPriceLabel": "推荐价格:",
+                "similarCountLabel": "类似GPU数量:",
+                "currencyUnit": "元",
+                "unitLabel": "个",
+                "showSimilarBtn": "查看类似商品信息",
+                "similarProductsHeader": "类似商品信息 (前10个)",
+                "detailTitle": "商品详情",
+                "backToListBtn": "返回列表",
+                "brandText": "品牌:",
+                "modelText": "型号:",
+                "dimensionsText": "尺寸:",
+                "productionDateText": "生产日期:",
+                "priceText": "价格:",
+                "descriptionText": "详细描述:"
+            },
+            "en-US": {
+                "pageTitle": "GPU Valuation System",
+                "mainHeader": "GPU Valuation System",
+                "uploadImagesLabel": "Upload GPU Images (Max 4)",
+                "uploadHint1": "Click to upload image 1",
+                "uploadHint2": "Click to upload image 2",
+                "uploadHint3": "Click to upload image 3",
+                "uploadHint4": "Click to upload image 4",
+                "dimensionsLabel": "Dimensions",
+                "lengthPlaceholder": "Length(mm)",
+                "widthPlaceholder": "Width(mm)",
+                "heightPlaceholder": "Height(mm)",
+                "brandLabel": "Brand",
+                "selectBrand": "Select Brand",
+                "productionDateLabel": "Production Date",
+                "selectProductionDate": "Select Production Date",
+                "year1": "1 year",
+                "year2": "2 years",
+                "year3": "3 years",
+                "year4": "4 years",
+                "year5": "5+ years",
+                "expectedPriceLabel": "Expected Price",
+                "expectedPricePlaceholder": "Enter expected price",
+                "submitBtn": "Submit Valuation",
+                "resultHeader": "Valuation Result",
+                "recommendedPriceLabel": "Recommended Price:",
+                "similarCountLabel": "Similar GPUs:",
+                "currencyUnit": "USD",
+                "unitLabel": "items",
+                "showSimilarBtn": "View Similar Products",
+                "similarProductsHeader": "Similar Products (Top 10)",
+                "detailTitle": "Product Details",
+                "backToListBtn": "Back to List",
+                "brandText": "Brand:",
+                "modelText": "Model:",
+                "dimensionsText": "Dimensions:",
+                "productionDateText": "Production Date:",
+                "priceText": "Price:",
+                "descriptionText": "Description:"
+            }
+        };
+
+        // 当前语言设置
+        let currentLanguage = 'zh-CN';
+        
+        // 初始化界面文本
+        function initUI() {
+            const lang = i18nConfig[currentLanguage];
+            
+            // 设置页面标题和主标题
+            document.getElementById('pageTitle').textContent = lang.pageTitle;
+            document.getElementById('mainHeader').textContent = lang.mainHeader;
+            
+            // 设置表单文本
+            document.getElementById('uploadImagesLabel').textContent = lang.uploadImagesLabel;
+            document.getElementById('uploadHint1').textContent = lang.uploadHint1;
+            document.getElementById('uploadHint2').textContent = lang.uploadHint2;
+            document.getElementById('uploadHint3').textContent = lang.uploadHint3;
+            document.getElementById('uploadHint4').textContent = lang.uploadHint4;
+            
+            document.getElementById('dimensionsLabel').textContent = lang.dimensionsLabel;
+            document.getElementById('length').placeholder = lang.lengthPlaceholder;
+            document.getElementById('width').placeholder = lang.widthPlaceholder;
+            document.getElementById('height').placeholder = lang.heightPlaceholder;
+            
+            document.getElementById('brandLabel').textContent = lang.brandLabel;
+            document.getElementById('brand').options[0].textContent = lang.selectBrand;
+            
+            document.getElementById('productionDateLabel').textContent = lang.productionDateLabel;
+            document.getElementById('productionDate').options[0].textContent = lang.selectProductionDate;
+            document.getElementById('productionDate').options[1].textContent = lang.year1;
+            document.getElementById('productionDate').options[2].textContent = lang.year2;
+            document.getElementById('productionDate').options[3].textContent = lang.year3;
+            document.getElementById('productionDate').options[4].textContent = lang.year4;
+            document.getElementById('productionDate').options[5].textContent = lang.year5;
+            
+            document.getElementById('expectedPriceLabel').textContent = lang.expectedPriceLabel;
+            document.getElementById('expectedPrice').placeholder = lang.expectedPricePlaceholder;
+            
+            document.getElementById('submitBtn').textContent = lang.submitBtn;
+            
+            // 设置结果区域文本
+            document.getElementById('resultHeader').textContent = lang.resultHeader;
+            document.getElementById('recommendedPriceLabel').textContent = lang.recommendedPriceLabel;
+            document.getElementById('similarCountLabel').textContent = lang.similarCountLabel;
+            document.getElementById('currencyUnit').textContent = lang.currencyUnit;
+            document.getElementById('unitLabel').textContent = lang.unitLabel;
+            document.getElementById('showSimilarBtn').textContent = lang.showSimilarBtn;
+            document.getElementById('similarProductsHeader').textContent = lang.similarProductsHeader;
+            document.getElementById('detailTitle').textContent = lang.detailTitle;
+            document.getElementById('backToListBtn').textContent = lang.backToListBtn;
+        }
+        
         // 图片预览功能
         function previewImage(input, previewId) {
             const preview = document.getElementById(previewId);
@@ -312,16 +446,16 @@
                     productItem.className = 'product-item';
                     
                     const dateText = {
-                        "1": "1年",
-                        "2": "2年",
-                        "3": "3年",
-                        "4": "4年",
-                        "5": "5年以上"
+                        "1": i18nConfig[currentLanguage].year1,
+                        "2": i18nConfig[currentLanguage].year2,
+                        "3": i18nConfig[currentLanguage].year3,
+                        "4": i18nConfig[currentLanguage].year4,
+                        "5": i18nConfig[currentLanguage].year5
                     };
                     
                     // 创建可点击的商品链接
                     const productLink = document.createElement('a');
-                    productLink.href = 'www.baidu.com';
+                    productLink.href = 'javascript:void(0)';
                     productLink.className = 'product-link';
                     productLink.textContent = `${product.brand} ${product.model}`;
                     productLink.onclick = function() {
@@ -329,12 +463,12 @@
                     };
                     
                     productItem.innerHTML = `
-                        <p><strong>型号:</strong> `;
+                        <p><strong>${i18nConfig[currentLanguage].modelText}</strong> `;
                     productItem.appendChild(productLink);
                     productItem.innerHTML += `</p>
-                        <p><strong>尺寸:</strong> ${product.length}mm × ${product.width}mm × ${product.height}mm</p>
-                        <p><strong>生产日期:</strong> ${dateText[product.productionDate] || product.productionDate + '年'}</p>
-                        <p><strong>价格:</strong> ${product.price} 元</p>
+                        <p><strong>${i18nConfig[currentLanguage].dimensionsText}</strong> ${product.length}mm × ${product.width}mm × ${product.height}mm</p>
+                        <p><strong>${i18nConfig[currentLanguage].productionDateText}</strong> ${dateText[product.productionDate] || product.productionDate + i18nConfig[currentLanguage].year1.substring(1)}</p>
+                        <p><strong>${i18nConfig[currentLanguage].priceText}</strong> ${product.price} ${i18nConfig[currentLanguage].currencyUnit}</p>
                     `;
                     
                     productList.appendChild(productItem);
@@ -349,29 +483,29 @@
         // 显示商品详情
         function showProductDetail(productId) {
             const product = mockSimilarGPUs.find(p => p.id === productId);
-			alert(product)
-            //if (!product) return;
+            if (!product) return;
             
+            const lang = i18nConfig[currentLanguage];
             const detailTitle = document.getElementById('detailTitle');
             const detailContent = document.getElementById('detailContent');
             
-            detailTitle.textContent = `${product.brand} ${product.model} 详情`;
+            detailTitle.textContent = `${product.brand} ${product.model} ${lang.detailTitle}`;
             
             const dateText = {
-                "1": "1年",
-                "2": "2年",
-                "3": "3年",
-                "4": "4年",
-                "5": "5年以上"
+                "1": lang.year1,
+                "2": lang.year2,
+                "3": lang.year3,
+                "4": lang.year4,
+                "5": lang.year5
             };
             
             detailContent.innerHTML = `
-                <p><strong>品牌:</strong> ${product.brand}</p>
-                <p><strong>型号:</strong> ${product.model}</p>
-                <p><strong>尺寸:</strong> ${product.length}mm × ${product.width}mm × ${product.height}mm</p>
-                <p><strong>生产日期:</strong> ${dateText[product.productionDate] || product.productionDate + '年'}</p>
-                <p><strong>价格:</strong> ${product.price} 元</p>
-                <p><strong>详细描述:</strong> ${product.details}</p>
+                <p><strong>${lang.brandText}</strong> ${product.brand}</p>
+                <p><strong>${lang.modelText}</strong> ${product.model}</p>
+                <p><strong>${lang.dimensionsText}</strong> ${product.length}mm × ${product.width}mm × ${product.height}mm</p>
+                <p><strong>${lang.productionDateText}</strong> ${dateText[product.productionDate] || product.productionDate + lang.year1.substring(1)}</p>
+                <p><strong>${lang.priceText}</strong> ${product.price} ${lang.currencyUnit}</p>
+                <p><strong>${lang.descriptionText}</strong> ${product.details}</p>
             `;
             
             // 隐藏列表，显示详情
@@ -380,10 +514,13 @@
         }
         
         // 隐藏商品详情，返回列表
-        function hideProductDetail() {
+        document.getElementById('backToListBtn').addEventListener('click', function() {
             document.getElementById('productDetail').style.display = 'none';
             document.getElementById('similarProducts').style.display = 'block';
-        }
+        });
+        
+        // 初始化界面
+        initUI();
     </script>
 </body>
 </html>
