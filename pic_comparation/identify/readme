@@ -1,0 +1,51 @@
+How to Use This Code
+Dataset Preparation:
+
+Organize your dataset in the following structure:
+
+data/
+    train/
+        class1/
+            img1.jpg
+            img2.jpg
+            ...
+        class2/
+            img1.jpg
+            img2.jpg
+            ...
+        ...
+    test/
+        class1/
+            img1.jpg
+            img2.jpg
+            ...
+        class2/
+            img1.jpg
+            img2.jpg
+            ...
+        ...
+Dependencies:
+Install the required packages:
+
+pip install torch torchvision numpy scikit-learn tqdm pillow
+Modify Parameters:
+
+Adjust train_dir and test_dir to point to your dataset
+
+Tune hyperparameters like batch_size, num_epochs, learning_rate, and margin as needed
+
+Run the Code:
+Simply execute the script to start training and evaluation.
+
+Key Features
+Triplet Loss Implementation: The code includes a proper implementation of triplet loss with margin.
+
+ResNet Backbone: Uses ResNet50 as the base model with custom embedding layers.
+
+Data Loading: Includes a custom dataset class that samples triplets (anchor, positive, negative).
+
+Evaluation: Uses K-Nearest Neighbors on the embeddings to evaluate the model.
+
+Reproducibility: Sets random seeds for consistent results.
+
+This implementation provides a solid foundation for fine-tuning ResNet with triplet loss for tasks like face recognition, image retrieval, or any other metric learning application.
