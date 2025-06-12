@@ -1,11 +1,11 @@
 # **后端功能和实现方式**
 后端主要完成以下几个功能：
-1）PIC相关：
-1.1.1）解析video文件，将目标帧数据保存为pic，[yolo]；
-2.2.2）对比两个pic是否是同一个实体[triple ResNet]；
-3.2）DB相关：
-4.2.1）保存video文件中提取到的pic信息，及其他信息（pic，size，platform，date，category，price）保存到DB中；
-5.2.2）根据输入信息（size，category，pic），与DB中保存的数据比对后，给出TOP8匹配结果；
+- 1）PIC相关：
+- 1.1）解析video文件，将目标帧数据保存为pic，[yolo]；
+- 2.2）对比两个pic是否是同一个实体[triple ResNet]；
+- 2）DB相关：
+- 2.1）保存video文件中提取到的pic信息，及其他信息（pic，size，platform，date，category，price）保存到DB中；
+- 2.2）根据输入信息（size，category，pic），与DB中保存的数据比对后，给出TOP8匹配结果；
 具体描述和实现方式如下所述
 ## **PIC处理相关技术路径**
 为了实现对video文件的解析，在video playing的同时，使用yolo模型对每一帧数据进行判断，并将目标区域以指定格式，指定文件名格式，保存到指定的文件目录。这期间涉及到的技术实现方案包括yolo的模式识别，opencv使用，格式定义等细节实现。
@@ -22,10 +22,10 @@
 #### **YOLO版本选择和fine-turing**
 我们选择v8x，如果后续有性能和精度更优的版本，我们也会适时调整模型的版本，甚至选择其他的模型。
 在对预训练的YOLOv8进行fine-turing之前，首先需要明确以下几件事：
-1）训练时使用PIC尺寸：416x416，640x640，1280x1280;
-2）PIC的格式：支持常见的几种PIC格式（JPG/JPEG/PNG/BMP）；
-3）因为预训练的参数中已经积累了很多图片学习知识，所以fine-turing需要冻结一些层的参数，通常只保留用于分类的最后一个FC层；
-4）期望的fine-turing后的目标分类（category）需要重新定义。
+- 1）训练时使用PIC尺寸：416x416，640x640，1280x1280;
+- 2）PIC的格式：支持常见的几种PIC格式（JPG/JPEG/PNG/BMP）；
+- 3）因为预训练的参数中已经积累了很多图片学习知识，所以fine-turing需要冻结一些层的参数，通常只保留用于分类的最后一个FC层；
+- 4）期望的fine-turing后的目标分类（category）需要重新定义。
 
 ##### **category定义**
 
